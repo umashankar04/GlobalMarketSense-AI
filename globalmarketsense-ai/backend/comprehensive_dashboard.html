@@ -1,0 +1,1049 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MoneyControl Pro - Complete Market Intelligence</title>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0e1a;
+        --panel: #111827;
+        --panel-light: #1a202c;
+        --line: #2d3a4e;
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --green: #10b981;
+        --red: #ef4444;
+        --amber: #f59e0b;
+        --blue: #3b82f6;
+        --cyan: #06b6d4;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: linear-gradient(to bottom, #0a0e1a 0%, #0d1117 100%);
+        color: var(--text);
+        overflow-x: hidden;
+      }
+
+      .wrapper {
+        min-height: 100vh;
+      }
+      .container {
+        max-width: 1920px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* ===== TOP HEADER ===== */
+      .top-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(17, 24, 39, 0.6);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--line);
+        padding: 16px 20px;
+        margin: -20px -20px 20px -20px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .logo-section h1 {
+        font-size: 24px;
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        background: linear-gradient(to right, var(--cyan), var(--blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .logo-section p {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .header-stats {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .stat-box {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      .stat-label {
+        font-size: 11px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .stat-value {
+        font-size: 18px;
+        font-weight: 700;
+        margin-top: 4px;
+      }
+      .stat-up {
+        color: var(--green);
+      }
+      .stat-down {
+        color: var(--red);
+      }
+
+      /* ===== TABS/NAVIGATION ===== */
+      .nav-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--line);
+        overflow-x: auto;
+        padding-bottom: 12px;
+      }
+
+      .nav-tab {
+        padding: 10px 16px;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border-bottom: 2px solid transparent;
+        white-space: nowrap;
+      }
+
+      .nav-tab:hover {
+        color: var(--text);
+      }
+      .nav-tab.active {
+        color: var(--cyan);
+        border-bottom-color: var(--cyan);
+      }
+
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* ===== SUMMARY CARDS GRID ===== */
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .summary-card {
+        background: var(--panel-light);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        transition: all 0.2s;
+      }
+
+      .summary-card:hover {
+        border-color: var(--cyan);
+        background: var(--panel);
+      }
+
+      .card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 12px;
+      }
+      .card-icon {
+        font-size: 20px;
+      }
+      .card-label {
+        font-size: 11px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+      .card-value {
+        font-size: 22px;
+        font-weight: 800;
+        margin-top: 6px;
+      }
+      .card-change {
+        font-size: 12px;
+        margin-top: 6px;
+      }
+      .card-change.up {
+        color: var(--green);
+      }
+      .card-change.down {
+        color: var(--red);
+      }
+
+      /* ===== MAIN CONTENT GRID ===== */
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      @media (max-width: 1400px) {
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ===== SECTION CARDS ===== */
+      .section-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .section-header {
+        padding: 16px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .section-title {
+        font-size: 16px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .section-body {
+        padding: 16px;
+      }
+
+      /* ===== STOCK CARDS ===== */
+      .stock-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
+      }
+
+      .stock-card {
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+
+      .stock-card:hover {
+        border-color: var(--cyan);
+        background: var(--panel-light);
+        transform: translateY(-2px);
+      }
+
+      .stock-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 8px;
+      }
+
+      .stock-symbol {
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .stock-name {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .stock-price {
+        font-size: 18px;
+        font-weight: 800;
+        margin: 8px 0;
+      }
+
+      .stock-metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        font-size: 11px;
+        margin-bottom: 8px;
+      }
+
+      .metric {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 6px;
+        border-radius: 4px;
+        text-align: center;
+      }
+
+      .metric-label {
+        color: var(--text-muted);
+        font-size: 10px;
+      }
+      .metric-value {
+        font-weight: 600;
+        margin-top: 2px;
+      }
+
+      .stock-sentiment {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        padding: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+        margin-top: 8px;
+      }
+
+      .sentiment-bar {
+        width: 60px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .sentiment-fill {
+        height: 100%;
+        background: var(--green);
+      }
+      .sentiment-fill.neutral {
+        background: var(--amber);
+      }
+      .sentiment-fill.negative {
+        background: var(--red);
+      }
+
+      /* ===== TABLE STYLES ===== */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      .data-table th {
+        text-align: left;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .data-table td {
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .data-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .rank-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        background: var(--cyan);
+        color: #000;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 11px;
+      }
+
+      .price-up {
+        color: var(--green);
+      }
+      .price-down {
+        color: var(--red);
+      }
+
+      /* ===== CHART CONTAINERS ===== */
+      .chart-container {
+        width: 100%;
+        height: 300px;
+        margin: 12px 0;
+      }
+
+      .chart-container.large {
+        height: 400px;
+      }
+
+      /* ===== UTILITIES ===== */
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .badge-green {
+        background: rgba(16, 185, 129, 0.2);
+        color: var(--green);
+      }
+      .badge-red {
+        background: rgba(239, 83, 80, 0.2);
+        color: var(--red);
+      }
+      .badge-amber {
+        background: rgba(245, 158, 11, 0.2);
+        color: var(--amber);
+      }
+      .badge-blue {
+        background: rgba(59, 130, 246, 0.2);
+        color: var(--blue);
+      }
+
+      .text-right {
+        text-align: right;
+      }
+      .text-center {
+        text-align: center;
+      }
+
+      .footer {
+        font-size: 12px;
+        color: var(--text-muted);
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+      }
+
+      /* ===== LOADING & SPINNER ===== */
+      .spinner {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid var(--text-muted);
+        border-top-color: var(--cyan);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ===== RESPONSIVE ===== */
+      @media (max-width: 768px) {
+        .header-stats {
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 8px;
+        }
+        .stock-grid {
+          grid-template-columns: 1fr;
+        }
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        .summary-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="top-header">
+        <div class="logo-section">
+          <h1>💰 MoneyControl Pro</h1>
+          <p>Complete Financial Market Intelligence & Analytics</p>
+        </div>
+        <div class="header-stats">
+          <div class="stat-box">
+            <span class="stat-label">Global Change</span>
+            <span class="stat-value" id="globalChange">+0.32%</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Active Markets</span>
+            <span class="stat-value" id="activeMarkets">18</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Updated</span>
+            <span class="stat-value" id="lastUpdate" style="font-size: 14px"
+              >Just now</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+          <button class="nav-tab active" data-tab="dashboard">
+            📊 Dashboard
+          </button>
+          <button class="nav-tab" data-tab="gainers">📈 Top Gainers</button>
+          <button class="nav-tab" data-tab="losers">📉 Top Losers</button>
+          <button class="nav-tab" data-tab="sectors">🏢 By Sector</button>
+          <button class="nav-tab" data-tab="analysis">
+            🔬 Detailed Analysis
+          </button>
+          <button class="nav-tab" data-tab="watchlist">⭐ Watchlist</button>
+        </div>
+
+        <!-- DASHBOARD TAB -->
+        <div id="dashboard" class="tab-content active">
+          <!-- Summary Cards -->
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="card-top">
+                <span class="card-label">Market Leaders</span>
+                <span class="card-icon">🏆</span>
+              </div>
+              <div class="card-value" id="topGainer">N225</div>
+              <div class="card-change up">+3.86% | Nikkei 225</div>
+            </div>
+
+            <div class="summary-card">
+              <div class="card-top">
+                <span class="card-label">Market Laggards</span>
+                <span class="card-icon">📉</span>
+              </div>
+              <div class="card-value" id="topLoser">TADAWUL</div>
+              <div class="card-change down">-2.86% | Tadawul</div>
+            </div>
+
+            <div class="summary-card">
+              <div class="card-top">
+                <span class="card-label">Best Sentiment</span>
+                <span class="card-icon">😊</span>
+              </div>
+              <div class="card-value" id="bestSentiment">NIFTY50</div>
+              <div class="card-change up">+0.042 | Very Positive</div>
+            </div>
+
+            <div class="summary-card">
+              <div class="card-top">
+                <span class="card-label">Avg Volatility</span>
+                <span class="card-icon">⚡</span>
+              </div>
+              <div class="card-value" id="avgVol">2.15%</div>
+              <div class="card-change">Daily change</div>
+            </div>
+
+            <div class="summary-card">
+              <div class="card-top">
+                <span class="card-label">Risk Level</span>
+                <span class="card-icon">⚠️</span>
+              </div>
+              <div class="card-value" id="riskLevel">MODERATE</div>
+              <div class="card-change">Market stability</div>
+            </div>
+          </div>
+
+          <!-- Markets Overview -->
+          <div class="content-grid">
+            <div class="section-card">
+              <div class="section-header">
+                <span class="section-title">⭐ ALL MARKETS (18)</span>
+                <span
+                  class="spinner"
+                  id="loadSpinner"
+                  style="display: none"
+                ></span>
+              </div>
+              <div class="section-body">
+                <div class="stock-grid" id="allMarketsGrid"></div>
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-header">
+                <span class="section-title">📊 Market Heatmap</span>
+              </div>
+              <div class="section-body">
+                <div class="chart-container" id="heatmapChart"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Performance Rankings -->
+          <div class="section-card">
+            <div class="section-header">
+              <span class="section-title">🏆 Performance Rankings</span>
+            </div>
+            <div class="section-body">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 40px">#</th>
+                    <th>Market</th>
+                    <th>Price</th>
+                    <th>Change</th>
+                    <th>Volume</th>
+                    <th>Sentiment</th>
+                  </tr>
+                </thead>
+                <tbody id="performanceTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- GAINERS TAB -->
+        <div id="gainers" class="tab-content">
+          <div class="section-card">
+            <div class="section-header">
+              <span class="section-title">📈 Top 10 Gainers Today</span>
+            </div>
+            <div class="section-body">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 40px">Rank</th>
+                    <th>Symbol</th>
+                    <th>Price</th>
+                    <th>Today's Change</th>
+                    <th>Sentiment</th>
+                    <th>Volume</th>
+                  </tr>
+                </thead>
+                <tbody id="gainersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- LOSERS TAB -->
+        <div id="losers" class="tab-content">
+          <div class="section-card">
+            <div class="section-header">
+              <span class="section-title">📉 Top 10 Losers Today</span>
+            </div>
+            <div class="section-body">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 40px">Rank</th>
+                    <th>Symbol</th>
+                    <th>Price</th>
+                    <th>Today's Change</th>
+                    <th>Sentiment</th>
+                    <th>Volume</th>
+                  </tr>
+                </thead>
+                <tbody id="losersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTORS TAB -->
+        <div id="sectors" class="tab-content">
+          <div class="content-grid">
+            <div class="section-card">
+              <div class="section-header">
+                <span class="section-title">🌎 Americas</span>
+              </div>
+              <div class="section-body">
+                <div class="stock-grid" id="americasGrid"></div>
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-header">
+                <span class="section-title">🇪🇺 Europe</span>
+              </div>
+              <div class="section-body">
+                <div class="stock-grid" id="europeGrid"></div>
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-header">
+                <span class="section-title">🌏 Asia-Pacific</span>
+              </div>
+              <div class="section-body">
+                <div class="stock-grid" id="asiaGrid"></div>
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-header">
+                <span class="section-title">💎 Crypto</span>
+              </div>
+              <div class="section-body">
+                <div class="stock-grid" id="cryptoGrid"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALYSIS TAB -->
+        <div id="analysis" class="tab-content">
+          <div class="content-grid">
+            <div class="section-card">
+              <div class="section-header">
+                <span class="section-title">📈 Trend Analysis</span>
+              </div>
+              <div class="section-body">
+                <div class="chart-container large" id="trendChart"></div>
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-header">
+                <span class="section-title">🔗 Correlation Matrix</span>
+              </div>
+              <div class="section-body">
+                <div class="chart-container large" id="correlationChart"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WATCHLIST TAB -->
+        <div id="watchlist" class="tab-content">
+          <div class="section-card">
+            <div class="section-header">
+              <span class="section-title">⭐ My Watchlist</span>
+            </div>
+            <div class="section-body">
+              <div class="stock-grid" id="watchlistGrid"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <p>💼 MoneyControl Pro - Professional Market Intelligence Platform</p>
+          <p>
+            Real-time data • Advanced Analytics • Multiple Markets • 24/7
+            Monitoring
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const REGIONS = {
+        US: ["SP500", "NASDAQ", "DJI"],
+        EU: ["DAX", "CAC40", "FTSE100"],
+        IN: ["NIFTY50", "SENSEX"],
+        HK: ["HSI"],
+        JP: ["N225"],
+        KR: ["KOSPI"],
+        AU: ["ASX200"],
+        SG: ["STI"],
+        SA: ["TADAWUL"],
+        Crypto: ["BTC", "ETH"],
+      };
+
+      let allMarkets = [];
+      let refreshRate = 3000;
+      let autoRefreshTimer = null;
+
+      async function fetchMarkets() {
+        try {
+          const res = await fetch("/api/markets/all");
+          if (!res.ok) throw new Error("Failed to fetch markets");
+          const data = await res.json();
+          allMarkets = data.markets || [];
+          renderDashboard();
+        } catch (err) {
+          console.error("Fetch error:", err);
+        }
+      }
+
+      function renderDashboard() {
+        renderAllMarketsCards();
+        renderPerformanceTable();
+        renderGainersTable();
+        renderLosersTable();
+        renderByRegion();
+        renderSummary();
+        renderHeatmap();
+        updateTimestamp();
+      }
+
+      function renderAllMarketsCards() {
+        const grid = document.getElementById("allMarketsGrid");
+        grid.innerHTML = "";
+
+        allMarkets.forEach((market) => {
+          const changeClass = market.change_percent >= 0 ? "up" : "down";
+          const sentimentScore = market.sentiment?.net || 0;
+          const sentimentColor =
+            sentimentScore > 0.1
+              ? "positive"
+              : sentimentScore < -0.1
+                ? "negative"
+                : "neutral";
+
+          const html = `
+          <div class="stock-card">
+            <div class="stock-header">
+              <div>
+                <div class="stock-symbol">${market.market}</div>
+                <div class="stock-name">${market.exchange_info?.name || "Market"}</div>
+              </div>
+              <div class="badge badge-${changeClass === "up" ? "green" : "red"}">${market.change_percent?.toFixed(2) || 0}%</div>
+            </div>
+            <div class="stock-price ${changeClass}">₹${(market.price || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</div>
+            <div class="stock-metrics">
+              <div class="metric">
+                <div class="metric-label">High</div>
+                <div class="metric-value ${changeClass}">${(market.high || 0).toFixed(0)}</div>
+              </div>
+              <div class="metric">
+                <div class="metric-label">Low</div>
+                <div class="metric-value">${(market.low || 0).toFixed(0)}</div>
+              </div>
+            </div>
+            <div class="stock-sentiment">
+              <span>Sentiment:</span>
+              <div class="sentiment-bar">
+                <div class="sentiment-fill ${sentimentColor}" style="width: ${Math.max(0, Math.min(100, (sentimentScore + 1) * 50))}%"></div>
+              </div>
+              <span>${sentimentScore.toFixed(2)}</span>
+            </div>
+          </div>
+        `;
+          grid.insertAdjacentHTML("beforeend", html);
+        });
+      }
+
+      function renderPerformanceTable() {
+        const tbody = document.getElementById("performanceTable");
+        tbody.innerHTML = "";
+
+        const sorted = [...allMarkets].sort(
+          (a, b) => (b.change_percent || 0) - (a.change_percent || 0),
+        );
+
+        sorted.forEach((market, idx) => {
+          const changeClass =
+            market.change_percent >= 0 ? "price-up" : "price-down";
+          const sentiment = (market.sentiment?.net || 0).toFixed(2);
+
+          const html = `
+          <tr>
+            <td><span class="rank-badge">${idx + 1}</span></td>
+            <td><strong>${market.market}</strong><br><small style="color: var(--text-muted);">${market.exchange_info?.name}</small></td>
+            <td>₹${(market.price || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td class="${changeClass}"><strong>${market.change_percent?.toFixed(2)}%</strong></td>
+            <td>${(market.volume || 0).toLocaleString("en-IN")}</td>
+            <td><div class="badge badge-blue">${sentiment}</div></td>
+          </tr>
+        `;
+          tbody.insertAdjacentHTML("beforeend", html);
+        });
+      }
+
+      function renderGainersTable() {
+        const tbody = document.getElementById("gainersTable");
+        tbody.innerHTML = "";
+
+        const sorted = [...allMarkets]
+          .sort((a, b) => (b.change_percent || 0) - (a.change_percent || 0))
+          .slice(0, 10);
+
+        sorted.forEach((market, idx) => {
+          const sentiment = (market.sentiment?.net || 0).toFixed(2);
+
+          const html = `
+          <tr>
+            <td><span class="rank-badge">${idx + 1}</span></td>
+            <td><strong>${market.market}</strong></td>
+            <td>₹${(market.price || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td class="price-up"><strong>+${market.change_percent?.toFixed(2)}%</strong></td>
+            <td><div class="badge badge-blue">${sentiment}</div></td>
+            <td>${(market.volume || 0).toLocaleString("en-IN")}</td>
+          </tr>
+        `;
+          tbody.insertAdjacentHTML("beforeend", html);
+        });
+      }
+
+      function renderLosersTable() {
+        const tbody = document.getElementById("losersTable");
+        tbody.innerHTML = "";
+
+        const sorted = [...allMarkets]
+          .sort((a, b) => (a.change_percent || 0) - (b.change_percent || 0))
+          .slice(0, 10);
+
+        sorted.forEach((market, idx) => {
+          const sentiment = (market.sentiment?.net || 0).toFixed(2);
+
+          const html = `
+          <tr>
+            <td><span class="rank-badge">${idx + 1}</span></td>
+            <td><strong>${market.market}</strong></td>
+            <td>₹${(market.price || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</td>
+            <td class="price-down"><strong>${market.change_percent?.toFixed(2)}%</strong></td>
+            <td><div class="badge badge-blue">${sentiment}</div></td>
+            <td>${(market.volume || 0).toLocaleString("en-IN")}</td>
+          </tr>
+        `;
+          tbody.insertAdjacentHTML("beforeend", html);
+        });
+      }
+
+      function renderByRegion() {
+        Object.entries(REGIONS).forEach(([region, symbols]) => {
+          const markets = allMarkets.filter((m) => symbols.includes(m.market));
+          const gridId =
+            region === "US"
+              ? "americasGrid"
+              : region === "EU"
+                ? "europeGrid"
+                : region === "Crypto"
+                  ? "cryptoGrid"
+                  : "asiaGrid";
+
+          const grid = document.getElementById(gridId);
+          if (!grid) return;
+
+          grid.innerHTML = "";
+          markets.forEach((market) => {
+            const changeClass = market.change_percent >= 0 ? "up" : "down";
+            const html = `
+            <div class="stock-card">
+              <div class="stock-header">
+                <div>
+                  <div class="stock-symbol">${market.market}</div>
+                  <div class="stock-name">${market.exchange_info?.name}</div>
+                </div>
+                <div class="badge badge-${changeClass === "up" ? "green" : "red"}">${market.change_percent?.toFixed(2)}%</div>
+              </div>
+              <div class="stock-price ${changeClass}">₹${(market.price || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}</div>
+            </div>
+          `;
+            grid.insertAdjacentHTML("beforeend", html);
+          });
+        });
+      }
+
+      function renderHeatmap() {
+        const dates = [
+          ...new Set(
+            allMarkets.map((m) => m.updated_at?.split("T")[0] || "2026-02-23"),
+          ),
+        ];
+        const z = allMarkets.map((m) => [m.sentiment?.net || 0] * dates.length);
+
+        Plotly.react(
+          "heatmapChart",
+          [
+            {
+              type: "heatmap",
+              z,
+              x: dates.slice(0, 7),
+              y: allMarkets.map((m) => m.market),
+              colorscale: [
+                [0, "#ef4444"],
+                [0.5, "#fbbf24"],
+                [1, "#10b981"],
+              ],
+            },
+          ],
+          {
+            margin: { l: 60, r: 20, t: 20, b: 30 },
+            paper_bgcolor: "transparent",
+            plot_bgcolor: "transparent",
+            font: { color: "#94a3b8" },
+            height: 300,
+          },
+          { displayModeBar: false, responsive: true },
+        );
+      }
+
+      function renderSummary() {
+        if (allMarkets.length === 0) return;
+
+        const sorted = [...allMarkets].sort(
+          (a, b) => (b.change_percent || 0) - (a.change_percent || 0),
+        );
+        const avgChange = (
+          allMarkets.reduce((s, m) => s + (m.change_percent || 0), 0) /
+          allMarkets.length
+        ).toFixed(2);
+
+        document.getElementById("topGainer").textContent =
+          sorted[0]?.market || "N/A";
+        document.getElementById("topLoser").textContent =
+          sorted[allMarkets.length - 1]?.market || "N/A";
+        document.getElementById("activeMarkets").textContent =
+          allMarkets.length;
+        document.getElementById("globalChange").textContent =
+          (avgChange >= 0 ? "+" : "") + avgChange + "%";
+      }
+
+      function updateTimestamp() {
+        const now = new Date();
+        document.getElementById("lastUpdate").textContent =
+          now.toLocaleTimeString();
+      }
+
+      function setupTabs() {
+        document.querySelectorAll(".nav-tab").forEach((tab) => {
+          tab.addEventListener("click", () => {
+            document
+              .querySelectorAll(".nav-tab")
+              .forEach((t) => t.classList.remove("active"));
+            document
+              .querySelectorAll(".tab-content")
+              .forEach((c) => c.classList.remove("active"));
+            tab.classList.add("active");
+            document.getElementById(tab.dataset.tab).classList.add("active");
+          });
+        });
+      }
+
+      function startAutoRefresh() {
+        if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+        autoRefreshTimer = setInterval(fetchMarkets, refreshRate);
+      }
+
+      setupTabs();
+      fetchMarkets();
+      startAutoRefresh();
+    </script>
+  </body>
+</html>
