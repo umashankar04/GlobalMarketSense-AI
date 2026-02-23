@@ -2,6 +2,10 @@
 
 Multi-Market Sentiment & Volatility Intelligence Engine for US, India, and Crypto market intelligence.
 
+## Description
+
+GlobalMarketSense AI is a research and engineering platform that unifies real-time sentiment signals and volatility intelligence across multiple markets. It streams market-related text events, scores sentiment with NLP models, aggregates market-level sentiment indices, and exposes analytics through a FastAPI backend and dashboard. The system is built for rapid experimentation with forecasting and cross-market causality analysis while remaining production-friendly through Dockerized services.
+
 ## Supported Markets
 
 - S&P 500 (`SP500`)
@@ -21,6 +25,14 @@ Multi-Market Sentiment & Volatility Intelligence Engine for US, India, and Crypt
 - Cross-market analysis: lead-lag, divergence, and causality utilities
 - FastAPI backend + localhost web dashboard
 - Dockerized deployment
+
+## Project Report
+
+- Detailed report: [REPORT.md](REPORT.md)
+
+## Screenshot
+
+![GlobalMarketSense AI Dashboard](assets/screenshots/dashboard-overview.svg)
 
 ## Project Structure
 
